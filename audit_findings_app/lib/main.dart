@@ -137,6 +137,7 @@ class _MyappState extends State<MyApp> {
               child: Center(
                 child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children:[
                         SizedBox(
                           height: 70,
@@ -206,6 +207,7 @@ class _MyappState extends State<MyApp> {
                           height:30,
                         ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text('Forgot password?'),
                             SizedBox(
