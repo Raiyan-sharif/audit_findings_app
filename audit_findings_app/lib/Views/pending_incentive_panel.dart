@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:audit_findings_app/Services/audit_selection_panel_data.dart';
 import 'package:audit_findings_app/Services/dataFromCode.dart';
 import 'package:audit_findings_app/TransactionListWidgets/PendingIncentiveTransitionList.dart';
 import 'package:audit_findings_app/TransactionListWidgets/ShiftedToSDTransactionList.dart';
 import 'package:audit_findings_app/TransitionWdgets/PendingIncentiveTransition.dart';
 import 'package:audit_findings_app/TransitionWdgets/ShiftedToSDTransaction.dart';
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as doi;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,19 +31,21 @@ class _PendingIncentivePanelState extends State<PendingIncentivePanel> {
   String ammount;
 
 
+
   Future<String> getAuditSelectionId() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String data = prefs.getString('idOfAuditSelection');
     return data;
   }
 
-  void _addNewTransaction(String remarks, double amount) {
+  void _addNewTransaction(String remarks, double amount, File image) {
 
     final newTX = PendingIncentiveClaim(
         id: DateTime.now().toString(),
         customerInfoId: idOfAuditSelection,
         remarks: remarks,
         amount: amount,
+      image: image
     );
     setState(() {
       // _userTransactions.add(newTX);
@@ -69,8 +73,11 @@ class _PendingIncentivePanelState extends State<PendingIncentivePanel> {
         "Remarks": _userTransactions[counter].remarks,
         "Amount": _userTransactions[counter].amount,
       };
-      var response = await Dio().post(
-          'http://116.68.205.74/creditaudit/api/pending_inventive_claim',queryParameters: parameters);
+      doi.FormData formData = doi.FormData.fromMap({
+        "Image": await doi.MultipartFile.fromFile(_userTransactions[counter].image.path, filename: "${DateTime.now().toString()}_wrong_payment_file"),
+      });
+      var response = await doi.Dio().post(
+          'http://116.68.205.74/creditaudit/api/pending_inventive_claim',queryParameters: parameters, data: formData);
       counter++;
       print(response.data);
       getHttp();
@@ -154,7 +161,7 @@ class _PendingIncentivePanelState extends State<PendingIncentivePanel> {
                 children: [
 
                   Container(
-                    height: height * 0.7,
+                    height: height * 0.8,
                     child: PendingIncentiveTransitionList(
                       AuditData.Owninstance.pendingIncentiveClaimList,
                       deleteTransaction,
@@ -181,11 +188,14 @@ class _PendingIncentivePanelState extends State<PendingIncentivePanel> {
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.green[500],
-            child: Icon(Icons.add),
-            // onPressed: () => getIdForCustomerInfoId(),
-            onPressed: () => _startAddNewTransaction(context),
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 80.0),
+            child: FloatingActionButton(
+              backgroundColor: Colors.green[500],
+              child: Icon(Icons.add),
+              // onPressed: () => getIdForCustomerInfoId(),
+              onPressed: () => _startAddNewTransaction(context),
+            ),
           ),
         ),
       ),

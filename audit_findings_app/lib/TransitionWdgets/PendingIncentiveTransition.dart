@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class PendingIncentiveTransition extends StatefulWidget {
@@ -14,6 +17,20 @@ class _PendingIncentiveTransitionState extends State<PendingIncentiveTransition>
   final remarksController = TextEditingController();
   final amountControlller = TextEditingController();
 
+  File _image;
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
 
 
 
@@ -38,6 +55,7 @@ class _PendingIncentiveTransitionState extends State<PendingIncentiveTransition>
     widget.addTx(
       remarksController.text,
       enteredAmount,
+      _image
     );
     Navigator.of(context).pop();
   }
@@ -57,7 +75,7 @@ class _PendingIncentiveTransitionState extends State<PendingIncentiveTransition>
             right: 10,
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextField(
                 decoration: InputDecoration(
@@ -83,10 +101,14 @@ class _PendingIncentiveTransitionState extends State<PendingIncentiveTransition>
 //                        this.amountInput = value;
 //                      },
               ),
-
-
+              RaisedButton(
+                onPressed: getImage,
+                child: _image == null
+                    ? Text('No image selected.')
+                    : Image.file(_image),
+              ),
               SizedBox(
-                height: 50,
+                height: 30,
               ),
 
               RaisedButton(

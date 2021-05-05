@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:audit_findings_app/Model/wrong_payment_model.dart';
 import 'package:audit_findings_app/Services/audit_selection_panel_data.dart';
 import 'package:audit_findings_app/Services/dataFromCode.dart';
@@ -13,7 +15,7 @@ import 'package:audit_findings_app/TransitionWdgets/ShiftedToSDTransaction.dart'
 import 'package:audit_findings_app/Views/view_edit_report.dart';
 import 'package:audit_findings_app/Views/wrong_payment_transitions.dart';
 import 'package:audit_findings_app/Views/wrong_transaction_list.dart';
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as doi;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,7 +44,7 @@ class _ProductReceivedPanelState extends State<ProductReceivedPanel> {
     return data;
   }
 
-  void _addNewTransaction(String invoice, DateTime date, int quantity, double amount, String code) {
+  void _addNewTransaction(String invoice, DateTime date, int quantity, double amount, String code, String customerName, String address, File image) {
 
     final newTX = ProductReceived(
       id: DateTime.now().toString(),
@@ -52,8 +54,10 @@ class _ProductReceivedPanelState extends State<ProductReceivedPanel> {
       amount: amount,
       code: code,
       quantity: quantity,
-      customerName: DataFromCode.customerName,
-      address: DataFromCode.address
+      customerName: customerName,
+      address: address,
+      image: image
+
     );
     setState(() {
       // _userTransactions.add(newTX);
@@ -78,8 +82,8 @@ class _ProductReceivedPanelState extends State<ProductReceivedPanel> {
     try {
       Map<String, dynamic> parameters= {
         "CustomerInfoID": idOfAuditSelection,
-        "CustomerName": DataFromCode.customerName,
-        "Address": DataFromCode.address,
+        "CustomerName": _userTransactions[counter].customerName,
+        "Address": _userTransactions[counter].address,
         "Date": _userTransactions[counter].date,
         "Amount": _userTransactions[counter].amount,
         "Invoice": _userTransactions[counter].invoice,
@@ -88,8 +92,11 @@ class _ProductReceivedPanelState extends State<ProductReceivedPanel> {
         "Amount": _userTransactions[counter].amount.toInt()
       };
       print(parameters);
-      var response = await Dio().post(
-          'http://116.68.205.74/creditaudit/api/product_received',queryParameters: parameters);
+      doi.FormData formData = doi.FormData.fromMap({
+        "Image": await doi.MultipartFile.fromFile(_userTransactions[counter].image.path, filename: "${DateTime.now().toString()}_wrong_payment_file"),
+      });
+      var response = await doi.Dio().post(
+          'http://116.68.205.74/creditaudit/api/product_received',queryParameters: parameters,data: formData);
       counter++;
       print(response.data);
       getHttp();
@@ -173,7 +180,7 @@ class _ProductReceivedPanelState extends State<ProductReceivedPanel> {
                 children: [
 
                   Container(
-                    height: height * 0.7,
+                    height: height * 0.8,
                     child: ProductReceivedTransactionList(
 
                       AuditData.Owninstance.productReceivedList,
@@ -201,11 +208,14 @@ class _ProductReceivedPanelState extends State<ProductReceivedPanel> {
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.green[500],
-            child: Icon(Icons.add),
-            // onPressed: () => getIdForCustomerInfoId(),
-            onPressed: () => _startAddNewTransaction(context),
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 80.0),
+            child: FloatingActionButton(
+              backgroundColor: Colors.green[500],
+              child: Icon(Icons.add),
+              // onPressed: () => getIdForCustomerInfoId(),
+              onPressed: () => _startAddNewTransaction(context),
+            ),
           ),
         ),
       ),

@@ -23,17 +23,20 @@ class _CodeRegistrationPanelState extends State<CodeRegistrationPanel> {
   var aEAMName = TextEditingController();
   var zSMRSMName = TextEditingController();
   var sMName = TextEditingController();
+  var customerName = TextEditingController();
   var address = TextEditingController();
   var contactNumber = TextEditingController();
   var asPerACI = TextEditingController();
   var gap = TextEditingController();
+  var damagedStockController = TextEditingController();
+  var smsDue = TextEditingController();
   String userID;
   double asPerCustomer;
   int totalStock;
   int freshStock;
   int damagedStock;
   String businessWithOtherCode;
-  var customerName = TextEditingController();
+
 
   DateTime currentDate = DateTime.now();
 
@@ -57,6 +60,15 @@ class _CodeRegistrationPanelState extends State<CodeRegistrationPanel> {
       asPerACIValue = 0.0;
     }
     return asPerACIValue - asPerCustomer;
+  }
+
+  int getDamagedStockValue(){
+    if(totalStock == null || freshStock == null){
+      damagedStock = 0;
+      return 0;
+    }
+    damagedStock = (totalStock - freshStock);
+    return damagedStock;
   }
 
   @override
@@ -109,7 +121,7 @@ class _CodeRegistrationPanelState extends State<CodeRegistrationPanel> {
         "SmName" : customer.sMName,
         "Address" : customer.aaddress,
         "ContactNo" : customer.contactNumber,
-        "SmsDue" : customer.sMName,
+        "SmsDue" : customer.smsDue,
         "AsPerAci" : customer.asPerACI,
         "AsPerCustomer": asPerCustomer.toString(),
         "Gap" : getGapValue().toString(),
@@ -152,7 +164,7 @@ class _CodeRegistrationPanelState extends State<CodeRegistrationPanel> {
         var i = response.data["data"][0];
         customer = CodeDataMode(customerCode: i["CustomerCode"],customerName: i["CustomerName"], creditLimit: i["CreditLimit"],
           creditDays: i["CreditDays"], moMSOName: i["MOName"], aEAMName: i["AEName"], zSMRSMName: i["ZSMName"],
-          sMName: i["SmName"], aaddress: i["Address"],asPerACI: i["AsPerACI"]
+          sMName: i["SmName"], aaddress: i["Address"],asPerACI: i["AsPerACI"], smsDue: i["SmsDue"]
         );
         DataFromCode.customerName = i["CustomerName"];
         DataFromCode.address = i["Address"];
@@ -167,6 +179,7 @@ class _CodeRegistrationPanelState extends State<CodeRegistrationPanel> {
           address.text = customer.aaddress;
           contactNumber.text = customer.contactNumber;
           asPerACI.text = customer.asPerACI;
+          smsDue.text = customer.smsDue == null? 0:customer.smsDue;
           getToken();
 
         });
@@ -428,7 +441,8 @@ class _CodeRegistrationPanelState extends State<CodeRegistrationPanel> {
                                 Flexible(
                                   child: TextField(
                                     keyboardType: TextInputType.number,
-
+                                    controller: smsDue,
+                                    enabled: false,
                                     decoration: InputDecoration(
                                       labelText: "SMS Due",
                                       filled: true,
@@ -520,6 +534,8 @@ class _CodeRegistrationPanelState extends State<CodeRegistrationPanel> {
                                     onChanged: (val){
                                       setState(() {
                                         totalStock = int.parse(val);
+
+                                        damagedStockController.text = getDamagedStockValue().toString();
                                       });
                                     },
                                   ),
@@ -539,6 +555,7 @@ class _CodeRegistrationPanelState extends State<CodeRegistrationPanel> {
                                     onChanged: (val){
                                       setState(() {
                                         freshStock = int.parse(val);
+                                        damagedStockController.text = getDamagedStockValue().toString();
                                       });
                                     },
                                     decoration: InputDecoration(
@@ -554,12 +571,14 @@ class _CodeRegistrationPanelState extends State<CodeRegistrationPanel> {
                                 ),
                                 Flexible(
                                   child: TextField(
+                                    controller: damagedStockController,
+                                    enabled: false,
                                     keyboardType: TextInputType.number,
-                                    onChanged: (val){
-                                      setState(() {
-                                        damagedStock = int.parse(val);
-                                      });
-                                    },
+                                    // onChanged: (val){
+                                    //   setState(() {
+                                    //     damagedStock = int.parse(val);
+                                    //   });
+                                    // },
                                     decoration: InputDecoration(
                                       labelText: "Damaged Stock",
                                       filled: true,

@@ -2,10 +2,17 @@ import 'dart:io';
 
 import 'package:audit_findings_app/Model/wrong_payment_model.dart';
 import 'package:audit_findings_app/Services/audit_selection_panel_data.dart';
+import 'package:audit_findings_app/Services/dataFromCode.dart';
 import 'package:audit_findings_app/TransactionListWidgets/InvoiceRaisedButNotReceivedTransitionList.dart';
 import 'package:audit_findings_app/TransactionListWidgets/PaymentMadeNotDepositedTransactionList.dart';
+import 'package:audit_findings_app/TransactionListWidgets/ShiftedToSDTransactionList.dart';
+import 'package:audit_findings_app/TransactionListWidgets/StockWithFFTransactionList.dart';
+import 'package:audit_findings_app/TransactionListWidgets/UnderRateDiscountTransitionList.dart';
 import 'package:audit_findings_app/TransitionWdgets/InvoiceRaisedButNotReceivedTransition.dart';
 import 'package:audit_findings_app/TransitionWdgets/PaymentMadeNotDepositedTransaction.dart';
+import 'package:audit_findings_app/TransitionWdgets/ShiftedToSDTransaction.dart';
+import 'package:audit_findings_app/TransitionWdgets/StockWithFFTransision.dart';
+import 'package:audit_findings_app/TransitionWdgets/UnderRateDiscountTransition.dart';
 import 'package:audit_findings_app/Views/view_edit_report.dart';
 import 'package:audit_findings_app/Views/wrong_payment_transitions.dart';
 import 'package:audit_findings_app/Views/wrong_transaction_list.dart';
@@ -15,16 +22,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-class PaymentMadeButNotReceivedPanel extends StatefulWidget {
+class UnderRateDiscountPanel extends StatefulWidget {
 
 
   @override
-  _PaymentMadeButNotReceivedPanelState createState() => _PaymentMadeButNotReceivedPanelState();
+  _UnderRateDiscountPanelState createState() => _UnderRateDiscountPanelState();
 }
 
-class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceivedPanel> {
+class _UnderRateDiscountPanelState extends State<UnderRateDiscountPanel> {
   Function deleteTX;
-  final List<PaymentMadeNotDepositedData> _userTransactions = [];
+  final List<UnderrateProductSold> _userTransactions = [];
   //
   // ];
   int i = 0;
@@ -38,20 +45,33 @@ class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceiv
     return data;
   }
 
-  void _addNewTransaction(String invoice, DateTime date, double amount, String code,File _image) {
-
-    final newTX = PaymentMadeNotDepositedData(
+  void _addNewTransaction(
+  String remarks,
+  double amount,
+  String productName,
+  String quality,
+  String rate,
+  String dP,
+  String gAP,
+  File image
+      ) {
+//this.id,this.customerInfoId,this.remarks,this.amount,this.productCode,this.productName,this.quality,this.rate,this.dP,this.gAP,this.image
+    var newTX = UnderrateProductSold(
         id: DateTime.now().toString(),
         customerInfoId: idOfAuditSelection,
-        invoice: invoice,
-        date: date,
+        remarks: remarks,
         amount: amount,
-        code: code,
-        image: _image
+        productName: productName,
+        quality: quality,
+        rate: rate,
+        dP: dP,
+        gAP: gAP,
+        image: image
+
     );
     setState(() {
       // _userTransactions.add(newTX);
-      AuditData.Owninstance.paymentMadeNotDepositedDataList.add(newTX);
+      AuditData.Owninstance.underrateProductSoldList.add(newTX);
       _userTransactions.add(newTX);
       i = _userTransactions.length;
 
@@ -64,27 +84,37 @@ class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceiv
       return;
     }
 
-    print('Test ');
-    print(idOfAuditSelection);
-    print(_userTransactions[counter].date);
-    print(_userTransactions[counter].amount);
-    print(_userTransactions[counter].invoice);
+    print('Under rated Product');
 
 
+    /*
+    "Quantity" : quantity.toString(),
+        "Amount" : amountController.text,
+        "CustomerInfoID": idOfAuditSelection,
+        "Remarks": remarks,
+        "ProductName": productName,
+        "Rate": rate,
+        "DP":dp,
+        "GAP":gapController.text
+     */
 
     try {
       Map<String, dynamic> parameters= {
+        "Invoice": "under rated",
+        "ProductName": _userTransactions[counter].productName,
+        "Quantity" : _userTransactions[counter].quality.toString(),
+        "Amount" : _userTransactions[counter].amount.toString(),
         "CustomerInfoID": idOfAuditSelection,
-        "Date": _userTransactions[counter].date,
-        "Amount": _userTransactions[counter].amount,
-        "Invoice": _userTransactions[counter].invoice,
-        "Code": _userTransactions[counter].code
+        "Remarks": _userTransactions[counter].remarks,
+        "Rate": _userTransactions[counter].rate,
+        "DP": _userTransactions[counter].dP,
+        "GAP": _userTransactions[counter].gAP,
       };
       doi.FormData formData = doi.FormData.fromMap({
-        "Image": await doi.MultipartFile.fromFile(_userTransactions[counter].image.path, filename: "${DateTime.now().toString()}_wrong_payment_file"),
+        "Image": await doi.MultipartFile.fromFile(_userTransactions[counter].image.path, filename: "${DateTime.now().toString()}_under_rated_product"),
       });
       var response = await doi.Dio().post(
-          'http://116.68.205.74/creditaudit/api/payment_made_not_deposited',queryParameters: parameters, data: formData);
+          'http://116.68.205.74/creditaudit/api/underrate_product_sold',queryParameters: parameters, data: formData);
       counter++;
       print(response.data);
       getHttp();
@@ -102,7 +132,7 @@ class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceiv
 
   void deleteTransaction(String id) {
     setState(() {
-      AuditData.Owninstance.paymentMadeNotDepositedDataList.removeWhere((element) => element.id == id);
+      AuditData.Owninstance.underrateProductSoldList.removeWhere((element) => element.id == id);
       _userTransactions.removeWhere((element) => element.id == id);
     });
   }
@@ -113,7 +143,7 @@ class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceiv
         builder: (context) {
           return GestureDetector(
             onTap: () {},
-            child: PaymentMadeNotDepositedTransaction(_addNewTransaction),
+            child: UnderRateDiscountTransition(_addNewTransaction),
             behavior: HitTestBehavior.opaque,
           );
         });
@@ -133,7 +163,7 @@ class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceiv
     final appbar = AppBar(
       title: Center(
         child: Text(
-          'Payment Made',
+          'Under Rated Discount',
         ),
       ),
       backgroundColor: Colors.green[500],
@@ -169,9 +199,9 @@ class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceiv
 
                   Container(
                     height: height * 0.8,
-                    child: PaymentMadeNotDepositedTransactionList(
+                    child: UnderRateDiscountTransitionList(
 
-                      AuditData.Owninstance.paymentMadeNotDepositedDataList,
+                      AuditData.Owninstance.underrateProductSoldList,
                       deleteTransaction,
                     ),
                   ),

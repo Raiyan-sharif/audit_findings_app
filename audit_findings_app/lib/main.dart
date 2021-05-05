@@ -20,6 +20,8 @@ import 'Views/BusinessWithAciPanel.dart';
 import 'Views/MORecoveryCommitmentPanel.dart';
 import 'Views/OtherProblemsPanel.dart';
 import 'Views/RSMRecoveryCommitmentPanel.dart';
+import 'Views/StockWithFFPannel.dart';
+import 'Views/UnderRateDiscountPanel.dart';
 import 'Views/UnderRateDistcount.dart';
 import 'Views/pending_incentive_panel.dart';
 import 'Views/recovery_commited_panel.dart';
@@ -41,8 +43,8 @@ void main() {
           GetPage(name: "/shifted_to_sd", page: ()=> ShiftedToSDPanel()),
           GetPage(name: "/product_received", page: ()=> ProductReceivedPanel()),
           GetPage(name: "/product_received_others", page: ()=> ProductReceivedOthersPanel()),
-          GetPage(name: "/ff_stock", page: ()=> StockWithFFnPanel()),
-          GetPage(name: "/underrate_product_sold", page: ()=> UnderRateDistcountPanel()),
+          GetPage(name: "/ff_stock", page: ()=> StockWithFFnPanel2()),
+          GetPage(name: "/underrate_product_sold", page: ()=> UnderRateDiscountPanel()),
           GetPage(name: "/pending_inventive_claim", page: ()=> PendingIncentivePanel()),
           GetPage(name: "/other-observations", page: ()=> OtherProblemsPanel()),
           GetPage(name: "/business_with_aci", page: ()=> BusinessWithAciPanel()),

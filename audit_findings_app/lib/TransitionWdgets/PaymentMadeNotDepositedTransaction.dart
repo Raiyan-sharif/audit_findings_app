@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class PaymentMadeNotDepositedTransaction extends StatefulWidget {
@@ -15,6 +18,20 @@ class _PaymentMadeNotDepositedTransactionState extends State<PaymentMadeNotDepos
   final ffNameController = TextEditingController();
 
   final amountControlller = TextEditingController();
+  File _image;
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
 
 
   DateTime selectedDate;
@@ -41,6 +58,7 @@ class _PaymentMadeNotDepositedTransactionState extends State<PaymentMadeNotDepos
       selectedDate,
       double.parse(amountControlller.text),
       enteredTMR,
+      _image
 
     );
     Navigator.of(context).pop();
@@ -78,6 +96,27 @@ class _PaymentMadeNotDepositedTransactionState extends State<PaymentMadeNotDepos
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      selectedDate == null
+                          ? 'No Date Choosen'
+                          : DateFormat.yMd().format(selectedDate),
+                    ),
+                  ),
+                  FlatButton(
+                    textColor: Theme.of(context).primaryColor,
+                    child: Text(
+                      'Choose Date',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: _presentDatePicker,
+                  )
+                ],
+              ),
               TextField(
                 decoration: InputDecoration(labelText: 'Amount'),
                 controller: amountControlller,
@@ -102,7 +141,7 @@ class _PaymentMadeNotDepositedTransactionState extends State<PaymentMadeNotDepos
 //                      },
               ),
               SizedBox(
-                height: 50,
+                height: 30,
               ),
               TextField(
                 decoration: InputDecoration(
@@ -115,29 +154,14 @@ class _PaymentMadeNotDepositedTransactionState extends State<PaymentMadeNotDepos
 //                        this.titleInput = value;
 //                      },
               ),
-              SizedBox(
-                height: 50,
+              RaisedButton(
+                onPressed: getImage,
+                child: _image == null
+                    ? Text('No image selected.')
+                    : Image.file(_image),
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      selectedDate == null
-                          ? 'No Date Choosen'
-                          : DateFormat.yMd().format(selectedDate),
-                    ),
-                  ),
-                  FlatButton(
-                    textColor: Theme.of(context).primaryColor,
-                    child: Text(
-                      'Choose Date',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onPressed: _presentDatePicker,
-                  )
-                ],
+              SizedBox(
+                height: 30,
               ),
               RaisedButton(
                 child: Text(

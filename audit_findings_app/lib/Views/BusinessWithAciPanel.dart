@@ -35,7 +35,7 @@ class _BusinessWithAciPanelState extends State<BusinessWithAciPanel> {
 
 
 
-  void _addNewTransaction(String code,int totalDue,int overDue,int overDue120,int age) {
+  void _addNewTransaction(String code,int totalDue,int overDue,int overDue120,int age, String creditType) {
 
     final newTX = BusinessWithACIModel(
       id: DateTime.now().toString(),
@@ -45,7 +45,8 @@ class _BusinessWithAciPanelState extends State<BusinessWithAciPanel> {
       totalDue: totalDue,
       overDue: overDue,
       overDue120: overDue120,
-      age: age
+      age: age,
+      creditType: creditType
     );
     setState(() {
       // _userTransactions.add(newTX);
@@ -75,7 +76,9 @@ class _BusinessWithAciPanelState extends State<BusinessWithAciPanel> {
         "TotalDue": _userTransactions[counter].totalDue,
         "OverDue": _userTransactions[counter].overDue,
         "OverDue120": _userTransactions[counter].overDue120,
-        "Age": _userTransactions[counter].age
+        "Age": _userTransactions[counter].age,
+        "CreditType": _userTransactions[counter].creditType
+
       };
       print(parameters);
       var response = await Dio().post(
@@ -163,7 +166,7 @@ class _BusinessWithAciPanelState extends State<BusinessWithAciPanel> {
                 children: [
 
                   Container(
-                    height: height * 0.7,
+                    height: height * 0.8,
                     child: BusinessWithAciPanelTransitionList(
                       AuditData.Owninstance.businessWithACIModelList,
                       deleteTransaction,
@@ -190,11 +193,14 @@ class _BusinessWithAciPanelState extends State<BusinessWithAciPanel> {
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.green[500],
-            child: Icon(Icons.add),
-            // onPressed: () => getIdForCustomerInfoId(),
-            onPressed: () => _startAddNewTransaction(context),
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 80.0),
+            child: FloatingActionButton(
+              backgroundColor: Colors.green[500],
+              child: Icon(Icons.add),
+              // onPressed: () => getIdForCustomerInfoId(),
+              onPressed: () => _startAddNewTransaction(context),
+            ),
           ),
         ),
       ),

@@ -156,7 +156,7 @@ class _MORecoveryCommitmentPanelState extends State<MORecoveryCommitmentPanel> {
                 children: [
 
                   Container(
-                    height: height * 0.7,
+                    height: height * 0.8,
                     child: MORecoveryCommitmentTransitionList(
                       AuditData.Owninstance.mORecoveryCommitmentList,
                       deleteTransaction,
@@ -183,11 +183,14 @@ class _MORecoveryCommitmentPanelState extends State<MORecoveryCommitmentPanel> {
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.green[500],
-            child: Icon(Icons.add),
-            // onPressed: () => getIdForCustomerInfoId(),
-            onPressed: () => _startAddNewTransaction(context),
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 80.0),
+            child: FloatingActionButton(
+              backgroundColor: Colors.green[500],
+              child: Icon(Icons.add),
+              // onPressed: () => getIdForCustomerInfoId(),
+              onPressed: () => _startAddNewTransaction(context),
+            ),
           ),
         ),
       ),

@@ -207,7 +207,7 @@ class _AuditSelectionPanelState extends State<AuditSelectionPanel> {
                                   onPressed: () {
                                     Get.toNamed('/underrate_product_sold');
                                   },
-                                  child: Text('Underrate/Product Sold @discount rate')
+                                  child: Text('Under rate/Product Sold @discount rate')
                               ),
                             ),
                             SizedBox(

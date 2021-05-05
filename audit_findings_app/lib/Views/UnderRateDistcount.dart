@@ -21,7 +21,6 @@ class _UnderRateDistcountPanelState extends State<UnderRateDistcountPanel> {
   String invoice;
   String idOfAuditSelection;
   String remarks;
-  String productCode;
   String productName;
   String rate;
   String dp;
@@ -68,7 +67,7 @@ class _UnderRateDistcountPanelState extends State<UnderRateDistcountPanel> {
         double qualtityDouble = double.parse(quantity);
         double rateDouble = double.parse(rate);
         double dpValue = double.parse(dp);
-        double result =  dpValue - (qualtityDouble * rateDouble);
+        double result =  (qualtityDouble * rateDouble) - (qualtityDouble * dpValue)  ;
         return result.toString();
       }catch(e){
         return "0";
@@ -100,7 +99,6 @@ class _UnderRateDistcountPanelState extends State<UnderRateDistcountPanel> {
         "Amount" : amountController.text,
         "CustomerInfoID": idOfAuditSelection,
         "Remarks": remarks,
-        "ProductCode": productCode,
         "ProductName": productName,
         "Rate": rate,
         "DP":dp,
@@ -146,7 +144,7 @@ class _UnderRateDistcountPanelState extends State<UnderRateDistcountPanel> {
     final appbar = AppBar(
       title: Center(
         child: Text(
-          'Unrated Product Sold',
+          'Under rated Product Sold',
         ),
       ),
       backgroundColor: Colors.green[500],
@@ -203,26 +201,8 @@ class _UnderRateDistcountPanelState extends State<UnderRateDistcountPanel> {
                                   },
                                 ),
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Flexible(
-                                child: TextField(
 
 
-                                  decoration: InputDecoration(
-                                    labelText: "Product Code",
-                                    filled: true,
-                                    fillColor: Colors.white,
-
-                                  ),
-                                  onChanged: (value){
-                                    setState(() {
-                                      productCode = value;
-                                    });
-                                  },
-                                ),
-                              ),
                             ]
                         ),
                         SizedBox(

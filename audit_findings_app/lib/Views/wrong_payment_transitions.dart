@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class WrongPaymentTransition extends StatefulWidget {
@@ -13,6 +16,20 @@ class _WrongPaymentTransitionState extends State<WrongPaymentTransition> {
   final titleController = TextEditingController();
   final titleController2 = TextEditingController();
   final amountControlller = TextEditingController();
+  File _image;
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
 
   DateTime selectedDate;
 
@@ -38,6 +55,7 @@ class _WrongPaymentTransitionState extends State<WrongPaymentTransition> {
       titleController.text,
       titleController2.text,
       double.parse(amountControlller.text),
+      _image
     );
     Navigator.of(context).pop();
   }
@@ -85,6 +103,27 @@ class _WrongPaymentTransitionState extends State<WrongPaymentTransition> {
 //                        this.titleInput = value;
 //                      },
               ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      selectedDate == null
+                          ? 'No Date Choosen'
+                          : DateFormat.yMd().format(selectedDate),
+                    ),
+                  ),
+                  FlatButton(
+                    textColor: Theme.of(context).primaryColor,
+                    child: Text(
+                      'Choose Date of Code',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: _presentDatePicker,
+                  )
+                ],
+              ),
               TextField(
                 decoration: InputDecoration(labelText: 'Amount'),
                 controller: amountControlller,
@@ -105,29 +144,14 @@ class _WrongPaymentTransitionState extends State<WrongPaymentTransition> {
 //                        this.titleInput = value;
 //                      },
               ),
-              SizedBox(
-                height: 50,
+              RaisedButton(
+                onPressed: getImage,
+                child: _image == null
+                    ? Text('No image selected.')
+                    : Image.file(_image),
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      selectedDate == null
-                          ? 'No Date Choosen'
-                          : DateFormat.yMd().format(selectedDate),
-                    ),
-                  ),
-                  FlatButton(
-                    textColor: Theme.of(context).primaryColor,
-                    child: Text(
-                      'Choose Date',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onPressed: _presentDatePicker,
-                  )
-                ],
+              SizedBox(
+                height: 30,
               ),
               RaisedButton(
                 child: Text(

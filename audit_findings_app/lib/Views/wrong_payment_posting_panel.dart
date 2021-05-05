@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:audit_findings_app/Model/wrong_payment_model.dart';
 import 'package:audit_findings_app/Services/audit_selection_panel_data.dart';
 import 'package:audit_findings_app/Views/view_edit_report.dart';
 import 'package:audit_findings_app/Views/wrong_payment_transitions.dart';
 import 'package:audit_findings_app/Views/wrong_transaction_list.dart';
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as doi;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -32,7 +34,7 @@ class _WrongPaymentPanelState extends State<WrongPaymentPanel> {
   }
 
   void _addNewTransaction(
-      DateTime chosenDate, String code,String txTitle, double txAmount ) {
+      DateTime chosenDate, String code,String txTitle, double txAmount,File _image ) {
     // String id;
     // String customerInfoId;
     // DateTime date;
@@ -46,6 +48,7 @@ class _WrongPaymentPanelState extends State<WrongPaymentPanel> {
         code: code,
         id: DateTime.now().toString(),
         customerInfoId: idOfAuditSelection,
+        image: _image,
     );
     setState(() {
       // _userTransactions.add(newTX);
@@ -72,8 +75,11 @@ class _WrongPaymentPanelState extends State<WrongPaymentPanel> {
          "Code": _userTransactions[counter].code,
          "TMR": _userTransactions[counter].tMR
        };
-      var response = await Dio().post(
-          'http://116.68.205.74/creditaudit/api/wrong_payment_posting',queryParameters: parameters);
+       doi.FormData formData = doi.FormData.fromMap({
+         "Image": await doi.MultipartFile.fromFile(_userTransactions[counter].image.path, filename: "${DateTime.now().toString()}_wrong_payment_file"),
+       });
+      var response = await doi.Dio().post(
+          'http://116.68.205.74/creditaudit/api/wrong_payment_posting',queryParameters: parameters,data: formData);
       counter++;
       print(response.data);
       getHttp();
@@ -157,7 +163,7 @@ class _WrongPaymentPanelState extends State<WrongPaymentPanel> {
                 children: [
 
                   Container(
-                    height: height * 0.7,
+                    height: height * 0.8,
                     child: WrongTransactionList(
                       AuditData.Owninstance.wrongPaymentDataList,
                       deleteTransaction,
@@ -184,11 +190,16 @@ class _WrongPaymentPanelState extends State<WrongPaymentPanel> {
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.green[500],
-            child: Icon(Icons.add),
-            // onPressed: () => getIdForCustomerInfoId(),
-            onPressed: () => _startAddNewTransaction(context),
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 80),
+            child: FloatingActionButton(
+
+              backgroundColor: Colors.green[500],
+
+              child: Icon(Icons.add),
+              // onPressed: () => getIdForCustomerInfoId(),
+              onPressed: () => _startAddNewTransaction(context),
+            ),
           ),
         ),
       ),

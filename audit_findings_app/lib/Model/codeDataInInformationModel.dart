@@ -13,6 +13,14 @@ class CodeDataMode{
   final String aaddress;
   final String contactNumber;
   final String asPerACI;
-  CodeDataMode({this.customerCode,this.customerName,this.creditLimit,this.creditDays,this.moMSOName,this.aEAMName,this.zSMRSMName,this.sMName, this.aaddress,this.contactNumber,this.asPerACI});
+  final String smsDue;
+  String totalDue;
+  String overDue;
+  String overDue120;
+  String age;
+  String creditType;
+  CodeDataMode({this.customerCode,this.customerName,this.creditLimit,this.creditDays,this.moMSOName,this.aEAMName,this.zSMRSMName,this.sMName, this.aaddress,this.contactNumber,this.asPerACI,this.smsDue,
+  this.totalDue,this.overDue,this.overDue120,this.age, this.creditType
+  });
 
 }

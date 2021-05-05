@@ -53,6 +53,17 @@ class _RSMRecoveryCommitmentPanelState extends State<RSMRecoveryCommitmentPanel>
 
   Future<void> getHttp() async {
     if(counter >= i){
+
+      try {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        Map<String, dynamic> parameters= {
+          "email": prefs.getString('SupervisorEmail'),
+        };
+        var response = await doi.Dio().post(
+            'http://dashboard.acigroup.info/sopbank/notification/mail_test',queryParameters: parameters);
+      }catch(e){
+
+      }
       Get.offNamed('/home');
       return;
     }
@@ -156,7 +167,7 @@ class _RSMRecoveryCommitmentPanelState extends State<RSMRecoveryCommitmentPanel>
                 children: [
 
                   Container(
-                    height: height * 0.7,
+                    height: height * 0.8,
                     child: RSMRecoveryCommitmentTransitionList(
                       AuditData.Owninstance.rSMRecoveryCommitmentList,
                       deleteTransaction,
@@ -183,11 +194,14 @@ class _RSMRecoveryCommitmentPanelState extends State<RSMRecoveryCommitmentPanel>
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.green[500],
-            child: Icon(Icons.add),
-            // onPressed: () => getIdForCustomerInfoId(),
-            onPressed: () => _startAddNewTransaction(context),
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 80.0),
+            child: FloatingActionButton(
+              backgroundColor: Colors.green[500],
+              child: Icon(Icons.add),
+              // onPressed: () => getIdForCustomerInfoId(),
+              onPressed: () => _startAddNewTransaction(context),
+            ),
           ),
         ),
       ),

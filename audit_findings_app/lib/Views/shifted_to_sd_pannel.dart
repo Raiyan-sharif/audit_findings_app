@@ -39,7 +39,7 @@ class _ShiftedToSDPanelState extends State<ShiftedToSDPanel> {
     return data;
   }
 
-  void _addNewTransaction(String invoice, DateTime date, int quantity, double amount, String code) {
+  void _addNewTransaction(String invoice, DateTime date, int quantity, double amount, String code, String customerName, String address) {
 
     final newTX = ShiftedToSD(
         id: DateTime.now().toString(),
@@ -48,7 +48,9 @@ class _ShiftedToSDPanelState extends State<ShiftedToSDPanel> {
         date: date,
         quantity: quantity,
         amount: amount,
-        code: code
+        code: code,
+        customerName: customerName,
+      address: address
     );
     setState(() {
       // _userTransactions.add(newTX);
@@ -65,7 +67,7 @@ class _ShiftedToSDPanelState extends State<ShiftedToSDPanel> {
       return;
     }
 
-    print('Shifted to SD ');
+    print('Shifted to SD');
 
 
 
@@ -73,13 +75,14 @@ class _ShiftedToSDPanelState extends State<ShiftedToSDPanel> {
     try {
       Map<String, dynamic> parameters= {
         "CustomerInfoID": idOfAuditSelection,
-        "CustomerName": DataFromCode.customerName,
-        "Address": DataFromCode.address,
         "Date": _userTransactions[counter].date,
         "Amount": _userTransactions[counter].amount,
         "Invoice": _userTransactions[counter].invoice,
         "Code": _userTransactions[counter].code,
-        "Quantity": _userTransactions[counter].quantity
+        "Quantity": _userTransactions[counter].quantity,
+        "CustomerName": _userTransactions[counter].customerName,
+        "Address": _userTransactions[counter].address,
+
       };
       var response = await Dio().post(
           'http://116.68.205.74/creditaudit/api/shifted_to_sd',queryParameters: parameters);
@@ -166,7 +169,7 @@ class _ShiftedToSDPanelState extends State<ShiftedToSDPanel> {
                 children: [
 
                   Container(
-                    height: height * 0.7,
+                    height: height * 0.8,
                     child: ShiftedToSDTransactionList(
 
                       AuditData.Owninstance.shiftedToSDList,
@@ -194,11 +197,14 @@ class _ShiftedToSDPanelState extends State<ShiftedToSDPanel> {
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.green[500],
-            child: Icon(Icons.add),
-            // onPressed: () => getIdForCustomerInfoId(),
-            onPressed: () => _startAddNewTransaction(context),
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 80),
+            child: FloatingActionButton(
+              backgroundColor: Colors.green[500],
+              child: Icon(Icons.add),
+              // onPressed: () => getIdForCustomerInfoId(),
+              onPressed: () => _startAddNewTransaction(context),
+            ),
           ),
         ),
       ),

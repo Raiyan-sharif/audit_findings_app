@@ -2,10 +2,15 @@ import 'dart:io';
 
 import 'package:audit_findings_app/Model/wrong_payment_model.dart';
 import 'package:audit_findings_app/Services/audit_selection_panel_data.dart';
+import 'package:audit_findings_app/Services/dataFromCode.dart';
 import 'package:audit_findings_app/TransactionListWidgets/InvoiceRaisedButNotReceivedTransitionList.dart';
 import 'package:audit_findings_app/TransactionListWidgets/PaymentMadeNotDepositedTransactionList.dart';
+import 'package:audit_findings_app/TransactionListWidgets/ShiftedToSDTransactionList.dart';
+import 'package:audit_findings_app/TransactionListWidgets/StockWithFFTransactionList.dart';
 import 'package:audit_findings_app/TransitionWdgets/InvoiceRaisedButNotReceivedTransition.dart';
 import 'package:audit_findings_app/TransitionWdgets/PaymentMadeNotDepositedTransaction.dart';
+import 'package:audit_findings_app/TransitionWdgets/ShiftedToSDTransaction.dart';
+import 'package:audit_findings_app/TransitionWdgets/StockWithFFTransision.dart';
 import 'package:audit_findings_app/Views/view_edit_report.dart';
 import 'package:audit_findings_app/Views/wrong_payment_transitions.dart';
 import 'package:audit_findings_app/Views/wrong_transaction_list.dart';
@@ -15,16 +20,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-class PaymentMadeButNotReceivedPanel extends StatefulWidget {
+class StockWithFFnPanel2 extends StatefulWidget {
 
 
   @override
-  _PaymentMadeButNotReceivedPanelState createState() => _PaymentMadeButNotReceivedPanelState();
+  _StockWithFFnPanel2State createState() => _StockWithFFnPanel2State();
 }
 
-class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceivedPanel> {
+class _StockWithFFnPanel2State extends State<StockWithFFnPanel2> {
   Function deleteTX;
-  final List<PaymentMadeNotDepositedData> _userTransactions = [];
+  final List<StockWithFF> _userTransactions = [];
   //
   // ];
   int i = 0;
@@ -38,20 +43,23 @@ class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceiv
     return data;
   }
 
-  void _addNewTransaction(String invoice, DateTime date, double amount, String code,File _image) {
+  void _addNewTransaction(String invoice, int quantity, double amount, String ffName, String noOfWareHouse, String address,File image, DateTime date) {
 
-    final newTX = PaymentMadeNotDepositedData(
-        id: DateTime.now().toString(),
-        customerInfoId: idOfAuditSelection,
-        invoice: invoice,
-        date: date,
-        amount: amount,
-        code: code,
-        image: _image
+    var newTX = StockWithFF(
+      id: DateTime.now().toString(),
+      invoice: invoice,
+      quantity: quantity.toString(),
+      amount: amount,
+      ffName: ffName,
+      noOfWareHouse: noOfWareHouse,
+      address: address,
+      date: date,
+      image: image
+
     );
     setState(() {
       // _userTransactions.add(newTX);
-      AuditData.Owninstance.paymentMadeNotDepositedDataList.add(newTX);
+      AuditData.Owninstance.stockWithFFList.add(newTX);
       _userTransactions.add(newTX);
       i = _userTransactions.length;
 
@@ -64,27 +72,27 @@ class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceiv
       return;
     }
 
-    print('Test ');
-    print(idOfAuditSelection);
-    print(_userTransactions[counter].date);
-    print(_userTransactions[counter].amount);
-    print(_userTransactions[counter].invoice);
+    print('Shifted to SD');
+
 
 
 
     try {
       Map<String, dynamic> parameters= {
-        "CustomerInfoID": idOfAuditSelection,
-        "Date": _userTransactions[counter].date,
-        "Amount": _userTransactions[counter].amount,
         "Invoice": _userTransactions[counter].invoice,
-        "Code": _userTransactions[counter].code
+        "Date" : _userTransactions[counter].date,
+        "Quantity" : _userTransactions[counter].quantity.toString(),
+        "Amount" : _userTransactions[counter].amount.toString(),
+        "FFName" : _userTransactions[counter].ffName,
+        "NoOfWarehouse" : _userTransactions[counter].noOfWareHouse,
+        "Address": _userTransactions[counter].address,
+        "CustomerInfoID": idOfAuditSelection,
       };
       doi.FormData formData = doi.FormData.fromMap({
-        "Image": await doi.MultipartFile.fromFile(_userTransactions[counter].image.path, filename: "${DateTime.now().toString()}_wrong_payment_file"),
+        "Image": await doi.MultipartFile.fromFile(_userTransactions[counter].image.path, filename: "${DateTime.now().toString()}_ff_stock"),
       });
       var response = await doi.Dio().post(
-          'http://116.68.205.74/creditaudit/api/payment_made_not_deposited',queryParameters: parameters, data: formData);
+          'http://116.68.205.74/creditaudit/api/ff_stock',queryParameters: parameters, data: formData);
       counter++;
       print(response.data);
       getHttp();
@@ -102,7 +110,7 @@ class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceiv
 
   void deleteTransaction(String id) {
     setState(() {
-      AuditData.Owninstance.paymentMadeNotDepositedDataList.removeWhere((element) => element.id == id);
+      AuditData.Owninstance.stockWithFFList.removeWhere((element) => element.id == id);
       _userTransactions.removeWhere((element) => element.id == id);
     });
   }
@@ -113,7 +121,7 @@ class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceiv
         builder: (context) {
           return GestureDetector(
             onTap: () {},
-            child: PaymentMadeNotDepositedTransaction(_addNewTransaction),
+            child: StockWithFFTransision(_addNewTransaction),
             behavior: HitTestBehavior.opaque,
           );
         });
@@ -133,7 +141,7 @@ class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceiv
     final appbar = AppBar(
       title: Center(
         child: Text(
-          'Payment Made',
+          'Stock with FF',
         ),
       ),
       backgroundColor: Colors.green[500],
@@ -169,9 +177,9 @@ class _PaymentMadeButNotReceivedPanelState extends State<PaymentMadeButNotReceiv
 
                   Container(
                     height: height * 0.8,
-                    child: PaymentMadeNotDepositedTransactionList(
+                    child: StockWithFFTransactionList(
 
-                      AuditData.Owninstance.paymentMadeNotDepositedDataList,
+                      AuditData.Owninstance.stockWithFFList,
                       deleteTransaction,
                     ),
                   ),

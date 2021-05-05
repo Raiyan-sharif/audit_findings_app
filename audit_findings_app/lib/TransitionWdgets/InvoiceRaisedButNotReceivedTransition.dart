@@ -12,9 +12,15 @@ class InvoiceRaisedButNotReceivedTransition extends StatefulWidget {
 class _InvoiceRaisedButNotReceivedTransitionState extends State<InvoiceRaisedButNotReceivedTransition> {
   final titleController = TextEditingController();
   final amountControlller = TextEditingController();
-  bool isChecked = false;
+  int selectedRadio;
 
   DateTime selectedDate;
+
+  setSelectedRadio(int val){
+    setState(() {
+      selectedRadio = val;
+    });
+  }
 
   void submitData() {
     final enteredTitle = titleController.text;
@@ -32,12 +38,13 @@ class _InvoiceRaisedButNotReceivedTransitionState extends State<InvoiceRaisedBut
     if (enteredTitle.isEmpty || enteredAmount <= 0 || selectedDate == null) {
       return;
     }
+    print(selectedRadio);
 //DateTime date, double amount, String invoice, String depositConfirmation
     widget.addTx(
       selectedDate,
       double.parse(amountControlller.text),
       titleController.text,
-      isChecked.toString(),
+      selectedRadio.toString()
     );
     Navigator.of(context).pop();
   }
@@ -72,7 +79,8 @@ class _InvoiceRaisedButNotReceivedTransitionState extends State<InvoiceRaisedBut
             right: 10,
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+
             children: [
               TextField(
                 decoration: InputDecoration(
@@ -97,28 +105,6 @@ class _InvoiceRaisedButNotReceivedTransitionState extends State<InvoiceRaisedBut
               SizedBox(
                 height: 10,
               ),
-              RaisedButton(
-                onPressed: (){
-
-                },
-                child: Row(
-                  children: [
-                    Checkbox(
-                      value: isChecked,
-                      onChanged: (value){
-                        setState(() {
-                          isChecked = value;
-                        });
-                      },
-                ),
-                    Text('Confirmation From Deposit'),
-
-                  ]
-                ),
-              ),
-              SizedBox(
-                height: 50,
-              ),
               Row(
                 children: [
                   Expanded(
@@ -139,6 +125,36 @@ class _InvoiceRaisedButNotReceivedTransitionState extends State<InvoiceRaisedBut
                     onPressed: _presentDatePicker,
                   )
                 ],
+              ),
+              SizedBox(height: 10),
+              Text('Confirmation From depot: '),
+              ButtonBar(
+                  alignment: MainAxisAlignment.center,
+                  children: [
+                    Text('UnDelivered'),
+                    Radio(
+                      value: 1,
+                      groupValue: selectedRadio,
+                      activeColor: Colors.green,
+                      onChanged: (val){
+                        print("Radio $val");
+                        setSelectedRadio(val);
+                      },
+                    ),
+                    Text('Delivered'),
+                    Radio(
+                      value: 2,
+                      groupValue: selectedRadio,
+                      activeColor: Colors.green,
+                      onChanged: (val){
+                        print("Radio $val");
+                        setSelectedRadio(val);
+                      },
+                    ),
+                  ]
+              ),
+              SizedBox(
+                height: 30,
               ),
               RaisedButton(
                 child: Text(

@@ -1,4 +1,9 @@
+import 'dart:io';
+
+import 'package:audit_findings_app/Model/codeDataInInformationModel.dart';
+import 'package:dio/dio.dart' as doi;
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class ProductReceivedTransaction extends StatefulWidget {
@@ -12,9 +17,26 @@ class ProductReceivedTransaction extends StatefulWidget {
 class _ProductReceivedTransactionState extends State<ProductReceivedTransaction> {
 
   final codeController = TextEditingController();
+  var customerName = TextEditingController();
+  var address = TextEditingController();
+  CodeDataMode customer;
   final invoiceController = TextEditingController();
   final quantityController = TextEditingController();
   final amountControlller = TextEditingController();
+  File _image;
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
 
 
   DateTime selectedDate;
@@ -48,9 +70,38 @@ class _ProductReceivedTransactionState extends State<ProductReceivedTransaction>
       quantity,
       enteredAmount,
       codeController.text,
-
+      customerName.text,
+      address.text,
+      _image
     );
     Navigator.of(context).pop();
+  }
+  void getHttp() async {
+
+    print('Test ');
+
+
+    try {
+      var response = await doi.Dio().post(
+          'http://116.68.205.74/creditaudit/api/customer_info?CustomerCode=${codeController.text}');
+      print(response.data["data"][0]);
+      var i = response.data["data"][0];
+      customer = CodeDataMode(customerCode: i["CustomerCode"],customerName: i["CustomerName"], creditLimit: i["CreditLimit"],
+          creditDays: i["CreditDays"], moMSOName: i["MOName"], aEAMName: i["AEName"], zSMRSMName: i["ZSMName"],
+          sMName: i["SmName"], aaddress: i["Address"],asPerACI: i["AsPerACI"], smsDue: i["SmsDue"]
+      );
+
+      setState(() {
+        customerName.text = customer.customerName;
+        address.text = customer.aaddress;
+      });
+
+    }
+    catch (e){
+
+    }
+
+
   }
 
   void _presentDatePicker() {
@@ -83,8 +134,29 @@ class _ProductReceivedTransactionState extends State<ProductReceivedTransaction>
             right: 10,
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      selectedDate == null
+                          ? 'No Date Choosen'
+                          : DateFormat.yMd().format(selectedDate),
+                    ),
+                  ),
+                  FlatButton(
+                    textColor: Theme.of(context).primaryColor,
+                    child: Text(
+                      'Choose Date',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: _presentDatePicker,
+                  )
+                ],
+              ),
               TextField(
                 decoration: InputDecoration(
                   labelText: 'Invoice#',
@@ -123,9 +195,10 @@ class _ProductReceivedTransactionState extends State<ProductReceivedTransaction>
               SizedBox(
                 height: 10,
               ),
+
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Product Code',
+                  labelText: 'Customer Code',
                 ),
 
                 controller: codeController,
@@ -134,30 +207,46 @@ class _ProductReceivedTransactionState extends State<ProductReceivedTransaction>
 //                        this.titleInput = value;
 //                      },
               ),
-
-              SizedBox(
-                height: 50,
+              RaisedButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                    side: BorderSide(color: Colors.green[500])
+                ),
+                textColor: Colors.white,
+                color: Colors.green[500],
+                onPressed: (){
+                  getHttp();
+                },
+                child: const Text('Get data', style: TextStyle(fontSize: 20,)),
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      selectedDate == null
-                          ? 'No Date Choosen'
-                          : DateFormat.yMd().format(selectedDate),
-                    ),
-                  ),
-                  FlatButton(
-                    textColor: Theme.of(context).primaryColor,
-                    child: Text(
-                      'Choose Date',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onPressed: _presentDatePicker,
-                  )
-                ],
+              TextField(
+                controller: customerName,
+                enabled: false,
+                decoration: InputDecoration(
+                  labelText: "Customer Name",
+                  filled: true,
+                ),
+              ),
+
+              TextField(
+                controller: address,
+                enabled: false,
+                decoration: InputDecoration(
+                  labelText: "Address",
+                  filled: true,
+
+
+                ),
+              ),
+              SizedBox(height: 20),
+              RaisedButton(
+                onPressed: getImage,
+                child: _image == null
+                    ? Text('No image selected.')
+                    : Image.file(_image),
+              ),
+              SizedBox(
+                height: 30,
               ),
               RaisedButton(
                 child: Text(

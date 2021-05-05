@@ -1,29 +1,45 @@
+import 'dart:io';
+
 import 'package:audit_findings_app/Model/codeDataInInformationModel.dart';
+import 'package:audit_findings_app/Services/dataFromCode.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-class ProductReceivedOthersTransition extends StatefulWidget {
+class StockWithFFTransision extends StatefulWidget {
   final Function addTx;
 
-  ProductReceivedOthersTransition(this.addTx);
+  StockWithFFTransision(this.addTx);
   @override
-  _ProductReceivedOthersTransitionState createState() => _ProductReceivedOthersTransitionState();
+  _StockWithFFTransisionState createState() => _StockWithFFTransisionState();
 }
 
-class _ProductReceivedOthersTransitionState extends State<ProductReceivedOthersTransition> {
+class _StockWithFFTransisionState extends State<StockWithFFTransision> {
 
-  final codeController = TextEditingController();
-  var customerName = TextEditingController();
-  var address = TextEditingController();
-  CodeDataMode customer;
+  final ffController = TextEditingController();
+  final noOfWirehousController = TextEditingController();
+  final addressWirehousController = TextEditingController();
   final invoiceController = TextEditingController();
   final quantityController = TextEditingController();
   final amountControlller = TextEditingController();
 
-
-
   DateTime selectedDate;
+
+  File _image;
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
 
   void submitData() {
 
@@ -43,49 +59,22 @@ class _ProductReceivedOthersTransitionState extends State<ProductReceivedOthersT
     else {
       quantity = -1;
     }
-    print("Ok");
-    if (codeController.text.isEmpty || enteredAmount <= 0 || selectedDate == null ) {
+
+    if (ffController.text.isEmpty || enteredAmount <= 0 || selectedDate == null ) {
       return;
     }
-//String invoice, DateTime date, int quantity, double amount, String code,
+//String invoice, int quantity, double amount, String ffName, String noOfWareHouse, String address,File image, DateTime date
     widget.addTx(
       invoiceController.text,
-      selectedDate,
       quantity,
       enteredAmount,
-      codeController.text,
-      customerName.text,
-      address.text
-
+      ffController.text,
+      noOfWirehousController.text,
+      addressWirehousController.text,
+      _image,
+      selectedDate,
     );
     Navigator.of(context).pop();
-  }
-  void getHttp() async {
-
-    print('Test ');
-
-
-    try {
-      var response = await Dio().post(
-          'http://116.68.205.74/creditaudit/api/customer_info?CustomerCode=${codeController.text}');
-      print(response.data["data"][0]);
-      var i = response.data["data"][0];
-      customer = CodeDataMode(customerCode: i["CustomerCode"],customerName: i["CustomerName"], creditLimit: i["CreditLimit"],
-          creditDays: i["CreditDays"], moMSOName: i["MOName"], aEAMName: i["AEName"], zSMRSMName: i["ZSMName"],
-          sMName: i["SmName"], aaddress: i["Address"],asPerACI: i["AsPerACI"], smsDue: i["SmsDue"]
-      );
-
-      setState(() {
-        customerName.text = customer.customerName;
-        address.text = customer.aaddress;
-      });
-
-    }
-    catch (e){
-
-    }
-
-
   }
 
   void _presentDatePicker() {
@@ -104,6 +93,8 @@ class _ProductReceivedOthersTransitionState extends State<ProductReceivedOthersT
       }
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -181,44 +172,46 @@ class _ProductReceivedOthersTransitionState extends State<ProductReceivedOthersT
               ),
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Customer Code',
+                  labelText: 'FF Name',
                 ),
 
-                controller: codeController,
+                controller: ffController,
                 onSubmitted: (_) => submitData(),
 //                      onChanged: (value){
 //                        this.titleInput = value;
 //                      },
               ),
-              RaisedButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                    side: BorderSide(color: Colors.green[500])
-                ),
-                textColor: Colors.white,
-                color: Colors.green[500],
-                onPressed: (){
-                  getHttp();
-                },
-                child: const Text('Get data', style: TextStyle(fontSize: 20,)),
+              SizedBox(
+                height: 10,
               ),
               TextField(
-                controller: customerName,
-                enabled: false,
                 decoration: InputDecoration(
-                  labelText: "Customer Name",
-                  filled: true,
+                  labelText: 'Wirehouse Number',
                 ),
+
+                controller: noOfWirehousController,
+                onSubmitted: (_) => submitData(),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Wirehouse Address',
+                ),
+
+                controller: addressWirehousController,
+                onSubmitted: (_) => submitData(),
+              ),
+              RaisedButton(
+                onPressed: getImage,
+                child: _image == null
+                    ? Text('No image selected.')
+                    : Image.file(_image),
               ),
 
-              TextField(
-                controller: address,
-                enabled: false,
-                decoration: InputDecoration(
-                  labelText: "Address",
-                  filled: true,
-                ),
-              ),
+
+
               SizedBox(
                 height: 30,
               ),

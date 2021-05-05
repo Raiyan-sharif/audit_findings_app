@@ -23,7 +23,7 @@ class _StockWithFFnPanelState extends State<StockWithFFnPanel> {
   String ffName;
   String addressOfWarehouse;
   String idOfAuditSelection;
-
+  var customerName = TextEditingController();
 
   DateTime currentDate = DateTime.now();
 

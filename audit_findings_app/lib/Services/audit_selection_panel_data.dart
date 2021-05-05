@@ -28,7 +28,8 @@ class WrongPaymentData{
   double amount;
   String code;
   String tMR;
-  WrongPaymentData({this.id,this.customerInfoId,this.date,this.amount,this.code,this.tMR});
+  File image;
+  WrongPaymentData({this.id,this.customerInfoId,this.date,this.amount,this.code,this.tMR,this.image});
 }
 class PaymentMadeNotDepositedData{
   String id;
@@ -38,7 +39,8 @@ class PaymentMadeNotDepositedData{
   DateTime date;
   double amount;
   String code;
-  PaymentMadeNotDepositedData({this.id, this.customerInfoId,this.invoice,this.quantity,this.date,this.amount,this.code});
+  File image;
+  PaymentMadeNotDepositedData({this.id, this.customerInfoId,this.invoice,this.quantity,this.date,this.amount,this.code,this.image});
 }
 class InvoiceRaisedNotReceived{
   String id;
@@ -72,7 +74,8 @@ class StockWithFF{
   String ffName;
   String noOfWareHouse;
   String address;
-  StockWithFF({this.id,this.customerInfoId,this.invoice,this.date,this.quantity,this.amount,this.ffName,this.noOfWareHouse,this.address});
+  File image;
+  StockWithFF({this.id,this.customerInfoId,this.invoice,this.date,this.quantity,this.amount,this.ffName,this.noOfWareHouse,this.address,this.image});
 }
 class ProductReceived{
   String id;
@@ -84,7 +87,8 @@ class ProductReceived{
   String customerName;
   String address;
   DateTime date;
-  ProductReceived({this.id,this.customerInfoId,this.invoice,this.amount,this.quantity,this.code, this.customerName,this.address,this.date});
+  File image;
+  ProductReceived({this.id,this.customerInfoId,this.invoice,this.amount,this.quantity,this.code, this.customerName,this.address,this.date,this.image});
 }
 class ProductReceivedOthers{
   String id;
@@ -103,20 +107,21 @@ class PendingIncentiveClaim{
   String customerInfoId;
   String remarks;
   double amount;
-  PendingIncentiveClaim({this.id,this.customerInfoId,this.remarks,this.amount});
+  File image;
+  PendingIncentiveClaim({this.id,this.customerInfoId,this.remarks,this.amount,this.image});
 }
 class UnderrateProductSold{
   String id;
   String customerInfoId;
   String remarks;
   double amount;
-  String productCode;
   String productName;
   String quality;
   String rate;
   String dP;
   String gAP;
-  UnderrateProductSold({this.id,this.customerInfoId,this.remarks,this.amount,this.productCode,this.productName,this.quality,this.rate,this.dP,this.gAP});
+  File image;
+  UnderrateProductSold({this.id,this.customerInfoId,this.remarks,this.amount,this.productName,this.quality,this.rate,this.dP,this.gAP,this.image});
 }
 class OtherObservations{
   String id;
@@ -160,7 +165,8 @@ class BusinessWithACIModel{
   int overDue;
   int overDue120;
   int age;
-  BusinessWithACIModel({this.id,this.customerId,this.code,this.customerName,this.totalDue,this.overDue,this.overDue120,this.age});
+  String creditType;
+  BusinessWithACIModel({this.id,this.customerId,this.code,this.customerName,this.totalDue,this.overDue,this.overDue120,this.age,this.creditType});
 }
 
 class CustomerRecoveryCommitment{

@@ -3,10 +3,10 @@ import 'package:audit_findings_app/Services/audit_selection_panel_data.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class PaymentMadeNotDepositedTransactionList extends StatelessWidget {
-  final List<PaymentMadeNotDepositedData> transactions;
+class StockWithFFTransactionList extends StatelessWidget {
+  final List<StockWithFF> transactions;
   final Function deleteTX;
-  PaymentMadeNotDepositedTransactionList(this.transactions,this.deleteTX);
+  StockWithFFTransactionList(this.transactions,this.deleteTX);
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +43,11 @@ class PaymentMadeNotDepositedTransactionList extends StatelessWidget {
               ),
             ),
             title: Text(
-              transactions[index].code,
+              transactions[index].invoice,
               style: Theme.of(context).textTheme.title,
             ),
             subtitle: Text(
-              transactions[index].invoice
+              DateFormat.yMMMd().format(transactions[index].date),
             ),
             trailing: IconButton(
               icon: Icon(Icons.delete,

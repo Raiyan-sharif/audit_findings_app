@@ -70,7 +70,7 @@ class _InvoiceRaisedButNotReceivedPanelState extends State<InvoiceRaisedButNotRe
     print(_userTransactions[counter].amount);
     print(_userTransactions[counter].invoice);
 
-    String confirmation = _userTransactions[counter].depositConfirmation == "true" ? 'Y' : 'N';
+    String confirmation = _userTransactions[counter].depositConfirmation == "2" ? 'Y' : 'N';
     print(confirmation);
 
 
@@ -132,7 +132,7 @@ class _InvoiceRaisedButNotReceivedPanelState extends State<InvoiceRaisedButNotRe
     final appbar = AppBar(
       title: Center(
         child: Text(
-          'Invoice Raised But Not Received',
+          'Invoice Raised',
         ),
       ),
       backgroundColor: Colors.green[500],
@@ -167,7 +167,7 @@ class _InvoiceRaisedButNotReceivedPanelState extends State<InvoiceRaisedButNotRe
                 children: [
 
                   Container(
-                    height: height * 0.7,
+                    height: height * 0.8,
                     child: InvoiceRaisedButNotReceivedTransitionList(
                       AuditData.Owninstance.invoiceRaisedNotReceivedList,
                       deleteTransaction,
@@ -194,11 +194,14 @@ class _InvoiceRaisedButNotReceivedPanelState extends State<InvoiceRaisedButNotRe
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.green[500],
-            child: Icon(Icons.add),
-            // onPressed: () => getIdForCustomerInfoId(),
-            onPressed: () => _startAddNewTransaction(context),
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 80),
+            child: FloatingActionButton(
+              backgroundColor: Colors.green[500],
+              child: Icon(Icons.add),
+              // onPressed: () => getIdForCustomerInfoId(),
+              onPressed: () => _startAddNewTransaction(context),
+            ),
           ),
         ),
       ),

@@ -38,7 +38,7 @@ class ProductReceivedOthersTransitionList extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.all(10),
                 child: FittedBox(
-                  child: Text('\$${transactions[index].amount}'),
+                  child: Text('${transactions[index].amount}/-'),
                 ),
               ),
             ),
@@ -47,7 +47,7 @@ class ProductReceivedOthersTransitionList extends StatelessWidget {
               style: Theme.of(context).textTheme.title,
             ),
             subtitle: Text(
-              DateFormat.yMMMd().format(transactions[index].date),
+              transactions[index].customerName,
             ),
             trailing: IconButton(
               icon: Icon(Icons.delete,

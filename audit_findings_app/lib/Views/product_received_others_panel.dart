@@ -40,7 +40,7 @@ class _ProductReceivedOthersPanelState extends State<ProductReceivedOthersPanel>
     return data;
   }
 
-  void _addNewTransaction(String invoice, DateTime date, int quantity, double amount, String code) {
+  void _addNewTransaction(String invoice, DateTime date, int quantity, double amount, String code, String customerName, String address) {
 
     final newTX = ProductReceivedOthers(
         id: DateTime.now().toString(),
@@ -50,8 +50,8 @@ class _ProductReceivedOthersPanelState extends State<ProductReceivedOthersPanel>
         amount: amount,
         code: code,
         quantity: quantity,
-        customerName: DataFromCode.customerName,
-        address: DataFromCode.address
+        customerName: customerName,
+        address: address
     );
     setState(() {
       // _userTransactions.add(newTX);
@@ -76,8 +76,8 @@ class _ProductReceivedOthersPanelState extends State<ProductReceivedOthersPanel>
     try {
       Map<String, dynamic> parameters= {
         "CustomerInfoID": idOfAuditSelection,
-        "CustomerName": DataFromCode.customerName,
-        "Address": DataFromCode.address,
+        "CustomerName": _userTransactions[counter].customerName,
+        "Address": _userTransactions[counter].address,
         "Date": _userTransactions[counter].date,
         "Amount": _userTransactions[counter].amount,
         "Invoice": _userTransactions[counter].invoice,
@@ -171,7 +171,7 @@ class _ProductReceivedOthersPanelState extends State<ProductReceivedOthersPanel>
                 children: [
 
                   Container(
-                    height: height * 0.7,
+                    height: height * 0.8,
                     child: ProductReceivedOthersTransitionList(
 
                       AuditData.Owninstance.productReceivedOthersList,
@@ -199,11 +199,14 @@ class _ProductReceivedOthersPanelState extends State<ProductReceivedOthersPanel>
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.green[500],
-            child: Icon(Icons.add),
-            // onPressed: () => getIdForCustomerInfoId(),
-            onPressed: () => _startAddNewTransaction(context),
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 80.0),
+            child: FloatingActionButton(
+              backgroundColor: Colors.green[500],
+              child: Icon(Icons.add),
+              // onPressed: () => getIdForCustomerInfoId(),
+              onPressed: () => _startAddNewTransaction(context),
+            ),
           ),
         ),
       ),

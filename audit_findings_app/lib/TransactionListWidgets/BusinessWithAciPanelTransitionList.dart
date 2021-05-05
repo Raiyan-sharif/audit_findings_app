@@ -43,11 +43,11 @@ class BusinessWithAciPanelTransitionList extends StatelessWidget {
               ),
             ),
             title: Text(
-              transactions[index].overDue.toString(),
-              style: Theme.of(context).textTheme.title,
+              transactions[index].customerName,
+
             ),
             subtitle: Text(
-              transactions[index].overDue120.toString(),
+              'Total due : ${transactions[index].totalDue.toString()}/-',
             ),
             trailing: IconButton(
               icon: Icon(Icons.delete,

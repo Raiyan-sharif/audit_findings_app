@@ -38,7 +38,7 @@ class PendingIncentiveTransitionList extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.all(10),
                 child: FittedBox(
-                  child: Text('\$${transactions[index].amount}'),
+                  child: Text('${transactions[index].amount}/-'),
                 ),
               ),
             ),
